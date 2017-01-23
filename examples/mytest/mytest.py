@@ -1,30 +1,26 @@
 import click
 
+from boto.s3.connection import S3Connection
 
 @click.command()
-@click.argument('input', type=click.File('rb'), nargs=-1)
-@click.argument('output', type=click.File('wb'))
+@click.argument('input', type=click.File('rb'))
+@click.argument('output', type=click.STRING)
 def cli(input, output):
-    """This script works similar to the Unix `cat` command but it writes
-    into a specific file (which could be the standard output as denoted by
-    the ``-`` sign).
-
-    \b
-    Copy stdin to stdout:
-        inout - -
-
-    \b
-    Copy foo.txt and bar.txt to stdout:
-        inout foo.txt bar.txt -
-
-    \b
-    Write stdin into the file foo.txt
-        inout - foo.txt
+    """This is an experimental script for reading a file and writing it to S3
     """
-    for f in input:
-        while True:
-            chunk = f.read(1024)
-            if not chunk:
-                break
-            output.write(chunk)
-            output.flush()
+
+    with input as f:
+        for filename in f:
+            read_file(filename.strip())
+    # inspection = input.name
+    # print('Reading: %(input)s. %(inspection)s.' % locals())
+    # print('Connecting...')
+    # conn = S3Connection()
+
+def read_file(filename):
+    print(filename)
+    file = open(filename, 'r')
+
+    print(file.read().strip())
+
+    file.close()
