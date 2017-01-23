@@ -19,7 +19,7 @@ def cli(input, output):
 
 def read_file(filename):
     print(filename)
-    file = open(filename, 'r')
+    file = open('data/' + filename, 'r')
 
     print(file.read().strip())
 
