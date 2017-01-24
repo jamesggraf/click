@@ -9,3 +9,5 @@ docs/_build
 click.egg-info
 .tox
 *.iml
+*.log
+*.jpg
