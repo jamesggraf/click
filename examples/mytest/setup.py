@@ -7,6 +7,9 @@ setup(
     include_package_data=True,
     install_requires=[
         'click',
+        'click-log',
+        'logging',
+        'boto'
     ],
     entry_points='''
         [console_scripts]
