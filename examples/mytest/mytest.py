@@ -20,30 +20,33 @@ from config_logging import configure_logging
 
 configure_logging(__name__)
 
-NUM_PRODUCERS = 2
-NUM_CONSUMERS = 2
-MAX_QUEUE_SIZE = 2
-q = Queue.Queue(MAX_QUEUE_SIZE)
+NUM_PRODUCERS = 3
+NUM_CONSUMERS = 5
 
 @click.command()
 @click.argument('csv_file', type=click.File('rU'))
 @click.argument('bucket_name', type=click.STRING)
+@click.option('-p', '--max-producers', default=3, help='The maximum number of producers to run')
+@click.option('-c', '--max-consumers', default=5, help='The maximum number of consumers to run')
+@click.option('-q', '--max-queue-size', default=32, help='The maximum number of items the producers can put in the queue before pausing to let the consumers catch up')
 @click_log.simple_verbosity_option()
 @click_log.init(__name__)
-def cli(csv_file, bucket_name):
+def cli(csv_file, bucket_name, max_producers, max_consumers, max_queue_size):
     """This is an experimental script for reading a file and writing it to S3
     """
     logging.info('Reading input file {filename} and writing to S3 bucket {bucket_name}'.format(filename=csv_file.name, bucket_name=bucket_name))
 
+    q = Queue.Queue(max_queue_size)
+
     producers=[]
-    for x in range(0, NUM_PRODUCERS):
+    for x in range(0, max_producers):
         producer = Producer.Producer(csv_file)
         producers.append(ProducerThread.ProducerThread(name='producer-{number}'.format(number=x), queue=q, producer=producer))
         producers[x].start()
         time.sleep(2)
 
     consumers=[]
-    for x in range(0, NUM_CONSUMERS):
+    for x in range(0, max_consumers):
         consumer = Consumer.Consumer()
         consumers.append(ConsumerThread.ConsumerThread(name='consumer-{number}'.format(number=x), queue=q, consumer=consumer))
         consumers[x].start()
