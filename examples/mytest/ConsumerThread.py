@@ -15,7 +15,7 @@ class ConsumerThread(threading.Thread):
 
     def run(self):
         q = self.queue
-        while self.running:
+        while self.running or not q.empty():
             if not q.empty():
                 item = q.get()
                 logging.info('{name} GETting {item} : {size} items in queue'.format(name=self.name, item=str(item), size=str(q.qsize())))
