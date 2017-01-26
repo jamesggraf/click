@@ -7,7 +7,7 @@ def configure_logging(name):
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                         datefmt='%m-%d %H:%M',
-                        filename='%s.log' % name,
+                        filename='logs/%s.log' % name,
                         filemode='w')
     root_logger = logging.getLogger('')
     # define a Handler which writes INFO messages or higher to the sys.stderr
@@ -19,7 +19,7 @@ def configure_logging(name):
     root_logger.addHandler(console)
 
     errorFormatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
-    error = logging.FileHandler('%s-error.log' % name)
+    error = logging.FileHandler('logs/%s-error.log' % name)
     error.setLevel(logging.ERROR)
     error.setFormatter(errorFormatter)
     root_logger.addHandler(error)

@@ -11,3 +11,5 @@ click.egg-info
 *.iml
 *.log
 *.jpg
+*.zip
+*.pptx

@@ -6,10 +6,15 @@ setup(
     py_modules=['mytest'],
     include_package_data=True,
     install_requires=[
+        'boto',
         'click',
         'click-log',
+        'csv',
         'logging',
-        'boto'
+        'Queue',
+        'random',
+        'threading',
+        'time'
     ],
     entry_points='''
         [console_scripts]
