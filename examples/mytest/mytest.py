@@ -1,14 +1,17 @@
 import click
 import click_log
+import Consumer
 import ConsumerThread
 import csv
 import logging
+import Producer
 import ProducerThread
 
 import Queue
-import threading
 import random
+import threading
 import time
+import sys
 
 
 from boto.s3.connection import S3Connection
@@ -34,13 +37,15 @@ def cli(csv_file, bucket_name):
 
     producers=[]
     for x in range(0, NUM_PRODUCERS):
-        producers.append(ProducerThread.ProducerThread(name='producer-{number}'.format(number=x), queue=q))
+        producer = Producer.Producer(csv_file)
+        producers.append(ProducerThread.ProducerThread(name='producer-{number}'.format(number=x), queue=q, producer=producer))
         producers[x].start()
         time.sleep(2)
 
     consumers=[]
     for x in range(0, NUM_CONSUMERS):
-        consumers.append(ConsumerThread.ConsumerThread(name='consumer-{number}'.format(number=x), queue=q))
+        consumer = Consumer.Consumer()
+        consumers.append(ConsumerThread.ConsumerThread(name='consumer-{number}'.format(number=x), queue=q, consumer=consumer))
         consumers[x].start()
         time.sleep(2)
 
@@ -61,10 +66,12 @@ def cli(csv_file, bucket_name):
         else:
             for consumer in consumers:
                 logging.info("Killing consumer")
-                consumer.running = False
+                consumer.stop()
                 consumer.join()
-            break
+            exit(0)
 
+if __name__ == '__main__':
+    cli(sys.argv[1:])
     # conn = S3Connection()
     #
     # # Check if the bucket exists. If not exit 1
@@ -86,20 +93,3 @@ def cli(csv_file, bucket_name):
     #             # write_file_to_s3(stripped_filename, bucket)
     #         except IOError:
     #             logging.error('Error writing file {filename}'.format(filename=stripped_filename))
-
-# class ConsumerThread(threading.Thread):
-#     def __init__(self, group=None, target=None, name=None,
-#                  args=(), kwargs=None, verbose=None):
-#         super(ConsumerThread,self).__init__()
-#         self.target = target
-#         self.name = name
-#         return
-#
-#     def run(self):
-#         while True:
-#             if not q.empty():
-#                 item = q.get()
-#                 logging.info('Getting ' + str(item)
-#                               + ' : ' + str(q.qsize()) + ' items in queue')
-#                 time.sleep(random.random())
-#         return
